@@ -1,0 +1,7 @@
+{
+  "name": "link-uptime-monitoring-back",
+  "packageManager": "yarn@4.9.2",
+  "scripts": {
+    "start": "nodemon index.js"
+  }
+}
