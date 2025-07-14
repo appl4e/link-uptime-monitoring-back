@@ -1,5 +1,5 @@
 const http = require("http");
-const url = require("url");
+const { handleReqRes } = require("./helpers/handleReqRes");
 
 const app = {};
 
@@ -13,10 +13,6 @@ app.createServer = () => {
     console.log("listening to port " + app.config.port);
   });
 };
-app.handleRequestResponse = (req, res) => {
-  console.log(url.parse(req.url, true));
-  console.log(req);
-  res.end("Hello World");
-};
+app.handleRequestResponse = handleReqRes;
 
 app.createServer();
