@@ -2,6 +2,7 @@
   "name": "link-uptime-monitoring-back",
   "packageManager": "yarn@4.9.2",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "NODE_ENV=staging nodemon index",
+    "prod": "NODE_ENV=production nodemon index"
   }
 }

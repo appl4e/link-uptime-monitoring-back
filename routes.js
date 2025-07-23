@@ -5,3 +5,5 @@ const {
 const routes = {
   sample: sampleRouteHandler,
 };
+
+module.exports = routes;

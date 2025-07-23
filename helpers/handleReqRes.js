@@ -3,6 +3,7 @@ const { StringDecoder } = require("string_decoder");
 const {
   notFoundHandler,
 } = require("../handlers/routeHandlers/notFoundHandler/notFoundRouteHandler");
+const routes = require("../routes");
 
 const handler = {};
 handler.handleReqRes = (req, res) => {
@@ -14,6 +15,14 @@ handler.handleReqRes = (req, res) => {
   const queryStringObject = parsedUrl.query;
   const headerObject = req.headers;
 
+  const reqResObj = {
+    parsedUrl,
+    path,
+    method,
+    queryStringObject,
+    headerObject,
+  };
+
   const chosenHandler = routes[path] || notFoundHandler;
 
   const decoder = new StringDecoder();
@@ -23,10 +32,19 @@ handler.handleReqRes = (req, res) => {
     realData += decoder.write(buffer);
   });
 
-  // res.end("Hello World");
+  res.end("Hello World");
   req.on("end", () => {
     realData += decoder.end();
-    console.log(realData);
+
+    chosenHandler(reqResObj, (statusCode, payload) => {
+      statusCode = typeof statusCode === "number" ? statusCode : 500;
+      payload = typeof payload == "object" ? payload : {};
+
+      const payloadString = JSON.stringify(payload);
+
+      res.writeHead(statusCode);
+      res.end(payloadString);
+    });
     res.end(realData);
   });
 };
