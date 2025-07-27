@@ -32,7 +32,7 @@ handler.handleReqRes = (req, res) => {
     realData += decoder.write(buffer);
   });
 
-  res.end("Hello World");
+  // res.end("Hello World");
   req.on("end", () => {
     realData += decoder.end();
 
@@ -42,10 +42,11 @@ handler.handleReqRes = (req, res) => {
 
       const payloadString = JSON.stringify(payload);
 
+      res.setHeader("Content-Type", "application/json");
       res.writeHead(statusCode);
       res.end(payloadString);
     });
-    res.end(realData);
+    // res.end(realData);
   });
 };
 

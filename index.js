@@ -42,9 +42,9 @@ const app = {};
 // );
 
 // testing file deleting
-data.remove("test", "text", (error) => {
-  console.log(error);
-});
+// data.remove("test", "text", (error) => {
+//   console.log(error);
+// });
 
 app.createServer = () => {
   const server = http.createServer(app.handleRequestResponse);
