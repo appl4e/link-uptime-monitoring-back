@@ -1,7 +1,7 @@
 const http = require("http");
 const { handleReqRes } = require("./helpers/handleReqRes");
 const environmentVariable = require("./helpers/environments");
-const { create } = require("./lib/data");
+const data = require("./lib/data");
 
 const app = {};
 
@@ -9,15 +9,42 @@ const app = {};
 //   port: environmentVariable.port,
 // };
 
+// testing file writing
+// data.create(
+//   "test",
+//   "text",
+//   {
+//     name: "Apple Mahmood Anas",
+//     phone: "01678116782",
+//     email: "apple@yopmail.com",
+//   },
+//   (error) => {
+//     console.log(error);
+//   }
+// );
+
 // testing file creation
-create(
-  "test",
-  "text",
-  { name: "Apple Mahmood", phone: "01678116782", email: "appl4e@gmail.com" },
-  (error) => {
-    console.log(error);
-  }
-);
+// data.read("test", "text", (error, content) => {
+//   console.log(error, content);
+// });
+
+// testing file updating
+// data.update(
+//   "test",
+//   "text",
+//   {
+//     name: "Anas",
+//     email: "anas@yopmail.com",
+//   },
+//   (error) => {
+//     console.log(error);
+//   }
+// );
+
+// testing file deleting
+data.remove("test", "text", (error) => {
+  console.log(error);
+});
 
 app.createServer = () => {
   const server = http.createServer(app.handleRequestResponse);
