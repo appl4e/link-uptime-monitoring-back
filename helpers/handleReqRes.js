@@ -7,7 +7,7 @@ const routes = require("../routes");
 
 const handler = {};
 handler.handleReqRes = (req, res) => {
-  console.log(url.parse(req.url, true));
+  // console.log(url.parse(req.url, true));
   const parsedUrl = url.parse(req.url, true);
   const rawPath = parsedUrl.pathname;
   const path = rawPath.replace(/^\/+|\/+$/g, "");
