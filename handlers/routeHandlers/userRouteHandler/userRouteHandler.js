@@ -1,3 +1,6 @@
+const data = require("../../../lib/data");
+const { parseJson, hashString } = require("../../../helpers/utilities");
+
 const handler = {};
 
 handler.userRouteHandler = (reqResProperties, callback) => {
@@ -8,7 +11,7 @@ handler.userRouteHandler = (reqResProperties, callback) => {
   } else {
     callback(405, { message: "The method is not allowed" });
   }
-  callback(200, { message: "This the user route handler" });
+  // callback(200, { message: "This the user route handler" });
 };
 
 handler._users = {};
@@ -40,19 +43,65 @@ handler._users.post = (reqResProperties, callback) => {
 
   const password =
     typeof reqResProperties.body.password === "string" &&
-    reqResProperties.body.password.trim().length == 11
+    reqResProperties.body.password.trim().length > 0
       ? reqResProperties.body.password
       : false;
 
   const tosAgreement =
-    typeof reqResProperties.body.tosAgreement === "string" &&
-    reqResProperties.body.tosAgreement.trim().length == 11
+    typeof reqResProperties.body.tosAgreement === "boolean"
       ? reqResProperties.body.tosAgreement
       : false;
+
+  if (firstName && lastName && email && phone && password && tosAgreement) {
+    data.read("users", phone, (readError) => {
+      if (readError) {
+        const body = {
+          firstName,
+          lastName,
+          email,
+          phone,
+          password: hashString(password),
+          tosAgreement,
+        };
+        data.create("users", phone, body, (createError) => {
+          if (!createError) {
+            callback(200, { message: "User has been created successfully." });
+          } else {
+            callback(500, {
+              message: "There was a server error creating user.",
+            });
+            console.log(createError);
+          }
+        });
+      } else {
+        callback(400, { error: "user with this phone number already exists." });
+      }
+    });
+  } else {
+    callback(422, { error: "User data validation Error" });
+  }
 };
 handler._users.put = (reqResProperties, callback) => {};
 handler._users.get = (reqResProperties, callback) => {
-  callback(200, { message: "this is get users api" });
+  const phone =
+    typeof reqResProperties.queryStringObject.phone === "string" &&
+    reqResProperties.queryStringObject.phone.trim().length == 11
+      ? reqResProperties.queryStringObject.phone
+      : false;
+  if (phone) {
+    data.read("users", phone, (readError, data) => {
+      if (!readError && !!data) {
+        const userData = parseJson(data);
+        callback(200, userData);
+      } else {
+        callback(404, {
+          error: "User with this phone number cannot be found?",
+        });
+      }
+    });
+  } else {
+    callback(404, { error: "user data with this query is not found." });
+  }
 };
 handler._users.delete = (reqResProperties, callback) => {};
 
