@@ -27,4 +27,8 @@ utilities.hashString = (str) => {
   }
 };
 
+utilities.createRandomStr = (strLength) => {
+  return "kljfkljfskfjjkl";
+};
+
 module.exports = utilities;
