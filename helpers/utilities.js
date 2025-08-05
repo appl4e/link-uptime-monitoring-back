@@ -28,7 +28,19 @@ utilities.hashString = (str) => {
 };
 
 utilities.createRandomStr = (strLength) => {
-  return "kljfkljfskfjjkl";
+  let length = typeof strLength == "number" && strLength > 0 ? strLength : 0;
+  if (length) {
+    const characters = "abcdefghijklmnopqrstuvwxyz1234567890";
+    let output = "";
+    for (let i = 0; i < length; i++) {
+      const randomCharacter = characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+      output += randomCharacter;
+    }
+
+    return output;
+  }
 };
 
 module.exports = utilities;

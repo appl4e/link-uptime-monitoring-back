@@ -40,13 +40,13 @@ handler._tokens.post = (resReqProperties, callback) => {
           const tokenId = createRandomStr(20);
           const expires = Date.now() + 60 * 60 * 1000;
 
-          const tokenObject = {
+          let tokenObject = {
             phone,
             id: tokenId,
             expires,
           };
 
-          data.create("tokens", tokenObject.id, tokenObject, (createError) => {
+          data.create("tokens", tokenId, tokenObject, (createError) => {
             if (!createError) {
               callback(200, {
                 message: "Token has been created successfully.",
@@ -71,8 +71,101 @@ handler._tokens.post = (resReqProperties, callback) => {
     callback(422, { error: "User data validation Error" });
   }
 };
-handler._tokens.get = (resReqProperties, callback) => {};
-handler._tokens.put = (resReqProperties, callback) => {};
-handler._tokens.delete = (resReqProperties, callback) => {};
+handler._tokens.get = (resReqProperties, callback) => {
+  const tokenId =
+    typeof resReqProperties.queryStringObject.id == "string" &&
+    resReqProperties.queryStringObject.id.trim().length == 20
+      ? resReqProperties.queryStringObject.id
+      : false;
+  console.log(tokenId);
+
+  if (tokenId) {
+    data.read("tokens", tokenId, (readErr, tokenData) => {
+      if (!readErr && tokenData) {
+        const parsedData = parseJson(tokenData);
+        callback(200, parsedData);
+      } else {
+        callback(404, { error: "Token data with this query is not found." });
+      }
+    });
+  } else {
+    callback(404, { error: "There was a problem in you query." });
+  }
+};
+handler._tokens.put = (resReqProperties, callback) => {
+  const id =
+    typeof resReqProperties.body.id == "string" &&
+    resReqProperties.body.id.trim().length == 20
+      ? resReqProperties.body.id
+      : false;
+  const extend =
+    typeof resReqProperties.body.extend == "boolean" &&
+    resReqProperties.body.extend == true
+      ? true
+      : false;
+
+  if (id && extend) {
+    data.read("tokens", id, (readErr, tokenData) => {
+      if (!readErr && tokenData) {
+        const parsedData = parseJson(tokenData);
+        const expires =
+          parsedData.expires > Date.now()
+            ? parsedData.expires + 60 * 60 * 1000
+            : false;
+        if (expires) {
+          const tokenObj = {
+            id,
+            phone: parsedData.phone,
+            expires,
+          };
+          data.update("tokens", id, tokenObj, (updErr) => {
+            if (!updErr) {
+              callback(200, {
+                message: "Token updated successfully.",
+                data: tokenObj,
+              });
+            } else {
+              callback(500, {
+                error: "There was an error updating your data.",
+              });
+            }
+          });
+        } else {
+          callback(400, { error: "Your has already expired." });
+        }
+      } else {
+        callback(404, { error: "Token data with this id is not found." });
+      }
+    });
+  } else {
+    callback(400, { error: "There was a problem with your data." });
+  }
+};
+handler._tokens.delete = (resReqProperties, callback) => {
+  const tokenId =
+    typeof resReqProperties.queryStringObject.id == "string" &&
+    resReqProperties.queryStringObject.id.trim().length == 20
+      ? resReqProperties.queryStringObject.id
+      : false;
+  if (tokenId) {
+    data.read("tokens", tokenId, (readErr, tokenData) => {
+      if (!readErr && tokenData) {
+        const parsedData = parseJson(tokenData);
+        data.remove("tokens", tokenId, (delErr) => {
+          if (!delErr) {
+            callback(200, { message: "The token removed successfully" });
+          } else {
+            callback(500, { error: "There was a error removing the token." });
+            console.log(remErr);
+          }
+        });
+      } else {
+        callback(404, { error: "Token data with this query is not found." });
+      }
+    });
+  } else {
+    callback(404, { error: "There was a problem in you query." });
+  }
+};
 
 module.exports = handler;
