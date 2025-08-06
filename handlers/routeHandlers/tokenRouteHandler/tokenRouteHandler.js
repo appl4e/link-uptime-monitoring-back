@@ -4,6 +4,7 @@ const {
   hashString,
 } = require("../../../helpers/utilities");
 const data = require("../../../lib/data");
+const { token } = require("../../../routes");
 const handler = {};
 
 handler.tokenRouteHandler = (resReqProperties, callback) => {
@@ -165,6 +166,27 @@ handler._tokens.delete = (resReqProperties, callback) => {
     });
   } else {
     callback(404, { error: "There was a problem in you query." });
+  }
+};
+
+handler._tokens.verify = (id, phone, callback) => {
+  if (id && phone) {
+    data.read("tokens", id, (readErr, tokenData) => {
+      if (!readErr && tokenData) {
+        if (
+          parseJson(tokenData).phone === phone &&
+          parseJson(tokenData).expires > Date.now()
+        ) {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      } else {
+        callback(false);
+      }
+    });
+  } else {
+    callback(false);
   }
 };
 
