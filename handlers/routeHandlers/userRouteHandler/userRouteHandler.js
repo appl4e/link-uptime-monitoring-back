@@ -9,7 +9,7 @@ handler.userRouteHandler = (reqResProperties, callback) => {
   if (acceptedMethod.indexOf(reqResProperties.method) > -1) {
     handler._users[reqResProperties.method](reqResProperties, callback);
   } else {
-    callback(405, { message: "The method is not allowed" });
+    callback(405, { error: "The method is not allowed." });
   }
   // callback(200, { message: "This the user route handler" });
 };

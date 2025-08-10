@@ -13,7 +13,7 @@ handler.tokenRouteHandler = (resReqProperties, callback) => {
   if (acceptedMethod.indexOf(resReqProperties.method) > -1) {
     handler._tokens[resReqProperties.method](resReqProperties, callback);
   } else {
-    callback(405, { message: "The method is not allowed" });
+    callback(405, { error: "The method is not allowed." });
   }
 };
 

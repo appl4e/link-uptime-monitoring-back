@@ -13,6 +13,7 @@ const routes = {
   sample: sampleRouteHandler,
   user: userRouteHandler,
   token: tokenRouteHandler,
+  check: checkRouteHandler,
 };
 
 module.exports = routes;
