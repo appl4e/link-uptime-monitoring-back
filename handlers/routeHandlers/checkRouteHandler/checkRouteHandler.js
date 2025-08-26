@@ -150,6 +150,37 @@ handler._checks.post = (reqResProperties, callback) => {
   }
 };
 
-handler._checks.get = (reqResProperties, callback) => {};
+handler._checks.get = (reqResProperties, callback) => {
+  const id =
+    typeof reqResProperties.queryStringObject.id === "string" &&
+    reqResProperties.queryStringObject.id.length === 20
+      ? reqResProperties.queryStringObject.id
+      : false;
+
+  if (id) {
+    data.read("checks", id, (err1, checkRawData) => {
+      if (!err1 && checkRawData) {
+        const checkData = parseJson(checkRawData);
+        const token =
+          typeof reqResProperties.headerObject.bearer === "string" &&
+          reqResProperties.headerObject.bearer.trim().length === 20
+            ? reqResProperties.headerObject.bearer
+            : false;
+        console.log(token);
+        _tokens.verify(token, checkData.userPhone, (isTokenValid) => {
+          if (isTokenValid) {
+            callback(200, { checkData });
+          } else {
+            callback(403, { error: "Authentication problem." });
+          }
+        });
+      } else {
+        callback(500, { error: "There was a server error!" });
+      }
+    });
+  } else {
+    callback(400, { error: "There was a problem with your request." });
+  }
+};
 
 module.exports = handler;
