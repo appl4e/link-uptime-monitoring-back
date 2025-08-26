@@ -183,4 +183,99 @@ handler._checks.get = (reqResProperties, callback) => {
   }
 };
 
+handler._checks.put = (reqResProperties, callback) => {
+  const id =
+    typeof reqResProperties.body.id === "string" &&
+    reqResProperties.body.id.trim().length === 20
+      ? reqResProperties.body.id
+      : false;
+  const protocol =
+    typeof reqResProperties.body.protocol === "string" &&
+    ["https", "http"].indexOf(reqResProperties.body.protocol) > -1
+      ? reqResProperties.body.protocol
+      : false;
+  const url =
+    typeof reqResProperties.body.url === "string" &&
+    reqResProperties.body.url.trim().length > 0
+      ? reqResProperties.body.url
+      : false;
+
+  const method =
+    typeof reqResProperties.body.method === "string" &&
+    ["get", "post", "put", "delete", "GET", "POST", "PUT", "DELETE"].indexOf(
+      reqResProperties.body.method
+    )
+      ? reqResProperties.body.method
+      : false;
+
+  const successCodes =
+    typeof reqResProperties.body.successCodes === "object" &&
+    reqResProperties.body.successCodes instanceof Array &&
+    reqResProperties.body.successCodes.length >= 1
+      ? reqResProperties.body.successCodes
+      : false;
+
+  const timeoutSeconds =
+    typeof reqResProperties.body.timeoutSeconds === "number" &&
+    reqResProperties.body.timeoutSeconds > 0 &&
+    reqResProperties.body.timeoutSeconds < 10 &&
+    reqResProperties.body.timeoutSeconds % 1 == 0
+      ? reqResProperties.body.timeoutSeconds
+      : false;
+
+  if (id) {
+    if (protocol || url || method || successCodes || timeoutSeconds) {
+      data.read("checks", id, (err1, checkRawData) => {
+        if (!err1) {
+          const checkData = parseJson(checkRawData);
+          const token =
+            typeof reqResProperties.headerObject.bearer === "string" &&
+            reqResProperties.headerObject.bearer.trim().length == 20
+              ? reqResProperties.headerObject.bearer
+              : false;
+          _tokens.verify(token, checkData.userPhone, (isValidToken) => {
+            if (isValidToken) {
+              if (protocol) {
+                checkData.protocol = protocol;
+              }
+              if (url) {
+                checkData.url = url;
+              }
+              if (method) {
+                checkData.method = method;
+              }
+              if (successCodes) {
+                checkData.successCodes = successCodes;
+              }
+              if (timeoutSeconds) {
+                checkData.timeoutSeconds = timeoutSeconds;
+              }
+
+              data.update("checks", id, checkData, (err3) => {
+                if (!err3) {
+                  callback(200, { checkData });
+                } else {
+                  callback(500, {
+                    error: "There was a server error updating the data.",
+                  });
+                }
+              });
+            } else {
+              callback(403, { error: "Authentication error." });
+            }
+          });
+        } else {
+          callback(404, { error: "Check links with this id was not found." });
+        }
+      });
+    } else {
+      callback(400, {
+        error: "There was a problem with your request data.",
+      });
+    }
+  } else {
+    callback(400, { error: "There was a problem with your request." });
+  }
+};
+
 module.exports = handler;

@@ -1,1 +1,1 @@
-{"id":"xvoiyu397nhk34umq96s","userPhone":"01677456456","protocol":"https","method":"GET","url":"www.google.com","successCodes":[200,201,202],"timeoutSeconds":4}
+{"id":"xvoiyu397nhk34umq96s","userPhone":"01677456456","protocol":"https","method":"POST","url":"facebook.com","successCodes":[200,201,202],"timeoutSeconds":4}
