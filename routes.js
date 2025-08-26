@@ -9,6 +9,10 @@ const {
   userRouteHandler,
 } = require("./handlers/routeHandlers/userRouteHandler/userRouteHandler");
 
+const {
+  checkRouteHandler,
+} = require("./handlers/routeHandlers/checkRouteHandler/checkRouteHandler");
+
 const routes = {
   sample: sampleRouteHandler,
   user: userRouteHandler,

@@ -4,12 +4,14 @@ environment.staging = {
   port: "3000",
   environment: "staging",
   hashSecretKey: "lkjsadklfjdslkfjkljdfskl",
+  maxChecks: 5,
 };
 
 environment.production = {
   port: "5000",
   environment: "production",
   hashSecretKey: "lkjsadklfjdslkfjkljdfskl",
+  maxChecks: 5,
 };
 
 const chosenEnvironment =
