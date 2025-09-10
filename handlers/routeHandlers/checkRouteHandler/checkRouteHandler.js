@@ -278,4 +278,57 @@ handler._checks.put = (reqResProperties, callback) => {
   }
 };
 
+handler._checks.delete = (reqResProperties, callback) => {
+  const id =
+    typeof reqResProperties.queryStringObject.id == "string" &&
+    reqResProperties.queryStringObject.id.length == 20
+      ? reqResProperties.queryStringObject.id
+      : false;
+
+  if (id) {
+    data.read("checks", id, (err1, checkRawData) => {
+      if (!err1 && checkRawData) {
+        const checkData = parseJson(checkRawData);
+        const token =
+          typeof reqResProperties.headerObject.bearer == "string" &&
+          reqResProperties.headerObject.bearer.trim().length == 20
+            ? reqResProperties.headerObject.bearer
+            : false;
+
+        _tokens.verify(token, checkData.userPhone, (isTokenValid) => {
+          if (isTokenValid) {
+            data.remove("checks", id, (err2) => {
+              if (!err2) {
+                data.read(
+                  "users",
+                  checkData.userPhone,
+                  (err3, userJsonData) => {
+                    if (!err3 && userJsonData) {
+                      const userData = parseJson(userJsonData);
+                    } else {
+                      callback(500, {
+                        error: "There was a problem finding the user data.",
+                      });
+                    }
+                  }
+                );
+              } else {
+                callback(500, {
+                  error: "There was a problem deleting the data.",
+                });
+              }
+            });
+          } else {
+            callback(403, { error: "Authentication failure~" });
+          }
+        });
+      } else {
+        callback(500, { error: "There was a problem reading the data." });
+      }
+    });
+  } else {
+    callback(400, { error: "There was a problem with your request." });
+  }
+};
+
 module.exports = handler;
