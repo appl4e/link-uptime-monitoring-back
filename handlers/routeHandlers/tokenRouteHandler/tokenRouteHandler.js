@@ -51,6 +51,7 @@ handler._tokens.post = (resReqProperties, callback) => {
             if (!createError) {
               callback(200, {
                 message: "Token has been created successfully.",
+                ...tokenObject,
               });
             } else {
               callback(500, {
