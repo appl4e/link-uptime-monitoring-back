@@ -305,6 +305,38 @@ handler._checks.delete = (reqResProperties, callback) => {
                   (err3, userJsonData) => {
                     if (!err3 && userJsonData) {
                       const userData = parseJson(userJsonData);
+                      const checksList =
+                        typeof userData.checks == "object" &&
+                        userData.checks instanceof Array
+                          ? userData.checks
+                          : [];
+                      const checksIndex = checksList.indexOf(id);
+                      if (checksIndex > -1) {
+                        checksList.splice(checksIndex, 1);
+
+                        userData.checks = checksList;
+                        data.update(
+                          "users",
+                          userData.phone,
+                          userData,
+                          (err4) => {
+                            if (!err4) {
+                              callback(200, {
+                                message: "Check link deleted successfully.",
+                              });
+                            } else {
+                              callback(500, {
+                                error:
+                                  "There was a problem removing check link from the user.",
+                              });
+                            }
+                          }
+                        );
+                      } else {
+                        callback(404, {
+                          error: "The check id was not found in the user data.",
+                        });
+                      }
                     } else {
                       callback(500, {
                         error: "There was a problem finding the user data.",

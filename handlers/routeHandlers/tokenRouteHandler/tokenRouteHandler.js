@@ -132,7 +132,7 @@ handler._tokens.put = (resReqProperties, callback) => {
             }
           });
         } else {
-          callback(400, { error: "Your has already expired." });
+          callback(400, { error: "Your token has already expired." });
         }
       } else {
         callback(404, { error: "Token data with this id is not found." });
